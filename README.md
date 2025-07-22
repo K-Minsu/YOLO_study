@@ -9,6 +9,7 @@ project_root/
 ├── YOLO_study.ipynb # 모델 학습 코드
 ├── YOLO_test.ipynb # 이미지/동영상 기반 테스트 코드
 ├── test.py # 웹캠 실시간 테스트 코드
+├── image_filtering.py # 이미지 데이터셋 필터링 코드
 └── README.md
 ```
 
