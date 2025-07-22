@@ -4,8 +4,8 @@ import json
 import shutil
 
 # ✅ 경로 설정 (역슬래시 이스케이프 또는 슬래시 사용)
-base_dir = "{BASE_PATH}"    # 압축 해제, 필터링 저장 경로
-zip_path = "{ZIP_PATH}"     # 저장된 .zip 경로
+base_dir = "C:/Users/User/Desktop/safety"
+zip_path = "C:/Users/User/Desktop/원천데이터"
 
 os.makedirs(base_dir, exist_ok=True)
 
@@ -16,8 +16,8 @@ def unzip_files(zip_file_path, target_dir):
     print(f"압축 해제 완료: {zip_file_path} -> {target_dir}")
 
 # ✅ 압축 파일명
-file_name_images = "{IMAGE_ZIP_FILE_NAME}"
-file_name_labels_json = "{LABELS_JSON_ZIP_FILE_NAME}"
+file_name_images = "8.오피스_문정동_KG_사옥_신축공사_images.zip"
+file_name_labels_json = "8.오피스_문정동_KG_사옥_신축공사_labels_json.zip"
 
 # ✅ 압축 해제
 unzip_files(os.path.join(zip_path, file_name_images), os.path.join(base_dir, "images"))
@@ -91,3 +91,85 @@ for split in ["train", "val"]:
         else:
             # 이미지가 없을 경우 경고 출력
             print(f"❌ 이미지 없음: {src_img_path}")
+
+print("📂 원본 데이터 개수 확인")
+
+for split in ["train", "val"]:
+    original_labels_dir = os.path.join(base_dir, "labels_json", split)
+    original_images_dir = os.path.join(base_dir, "images", split)
+
+    num_labels = len([f for f in os.listdir(original_labels_dir) if f.endswith(".json")])
+    num_images = len([f for f in os.listdir(original_images_dir) if f.lower().endswith(('.jpg', '.png'))])
+
+    print(f"[{split.upper()}] 원본 JSON 수: {num_labels}")
+    print(f"[{split.upper()}] 원본 이미지 수: {num_images}")
+
+# 전체 합계 출력
+total_original_labels = 0
+total_original_images = 0
+for split in ["train", "val"]:
+    total_original_labels += len([
+        f for f in os.listdir(os.path.join(base_dir, "labels_json", split))
+        if f.endswith(".json")
+    ])
+    total_original_images += len([
+        f for f in os.listdir(os.path.join(base_dir, "images", split))
+        if f.lower().endswith(('.jpg', '.png'))
+    ])
+
+print(f"\n🧾 전체 원본 JSON 수: {total_original_labels}")
+print(f"🧾 전체 원본 이미지 수: {total_original_images}")
+
+# ✅ 필터링된 결과 개수 출력
+for split in ["train", "val"]:
+    filtered_labels_dir = os.path.join(base_dir, "filtered", split, "labels_json")
+    filtered_images_dir = os.path.join(base_dir, "filtered", split, "images")
+
+    num_labels = len([f for f in os.listdir(filtered_labels_dir) if f.endswith(".json")])
+    num_images = len([f for f in os.listdir(filtered_images_dir) if f.lower().endswith(('.jpg', '.png'))])
+
+    print(f"[{split.upper()}] 필터링된 JSON 수: {num_labels}")
+    print(f"[{split.upper()}] 필터링된 이미지 수: {num_images}")
+
+# ✅ 전체 합계 출력
+total_labels = 0
+total_images = 0
+for split in ["train", "val"]:
+    filtered_labels_dir = os.path.join(base_dir, "filtered", split, "labels_json")
+    filtered_images_dir = os.path.join(base_dir, "filtered", split, "images")
+
+    total_labels += len([f for f in os.listdir(filtered_labels_dir) if f.endswith(".json")])
+    total_images += len([f for f in os.listdir(filtered_images_dir) if f.lower().endswith(('.jpg', '.png'))])
+
+print("\n📊 전체 필터링 결과")
+print(f"총 JSON 수: {total_labels}")
+print(f"총 이미지 수: {total_images}")
+
+from collections import defaultdict
+
+# 클래스별 등장 횟수 저장용 딕셔너리
+class_counts = defaultdict(int)
+
+# filtered JSON에서 class 값 집계
+for split in ["train", "val"]:
+    filtered_labels_dir = os.path.join(base_dir, "filtered", split, "labels_json")
+    
+    for json_file in os.listdir(filtered_labels_dir):
+        if not json_file.endswith(".json"):
+            continue
+
+        json_path = os.path.join(filtered_labels_dir, json_file)
+
+        with open(json_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        annotations = data.get("annotations", [])
+        for ann in annotations:
+            cls = ann.get("class")
+            if cls in target_classes:
+                class_counts[cls] += 1
+
+# 결과 출력
+print("\n📊 클래스별 객체 수 집계 (filtered 결과 기준):")
+for cls in sorted(class_counts):
+    print(f"클래스 {cls}: {class_counts[cls]}개")
