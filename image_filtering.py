@@ -4,8 +4,8 @@ import json
 import shutil
 
 # ✅ 경로 설정 (역슬래시 이스케이프 또는 슬래시 사용)
-base_dir = "C:/Users/User/Desktop/safety"
-zip_path = "C:/Users/User/Desktop/원천데이터"
+base_dir = "{BASE_PATH}"    # 압축 해제, 필터링 결과 저장 경로 ex) "C:/Users/User/Desktop/safety"
+zip_path = "{ZIP_PATH}"     # .zip 경로 ex) "C:/Users/User/Desktop/원천데이터"
 
 os.makedirs(base_dir, exist_ok=True)
 
@@ -16,8 +16,8 @@ def unzip_files(zip_file_path, target_dir):
     print(f"압축 해제 완료: {zip_file_path} -> {target_dir}")
 
 # ✅ 압축 파일명
-file_name_images = "8.오피스_문정동_KG_사옥_신축공사_images.zip"
-file_name_labels_json = "8.오피스_문정동_KG_사옥_신축공사_labels_json.zip"
+file_name_images = "{IMAGE_ZIP_FILE_NAME}"             # ex) "8.오피스_문정동_KG_사옥_신축공사_images.zip"
+file_name_labels_json = "{LABELS_JSON_ZIP_FILE_NAME}"  # ex) "8.오피스_문정동_KG_사옥_신축공사_labels_json.zip"
 
 # ✅ 압축 해제
 unzip_files(os.path.join(zip_path, file_name_images), os.path.join(base_dir, "images"))
