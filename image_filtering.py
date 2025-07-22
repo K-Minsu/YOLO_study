@@ -24,7 +24,7 @@ unzip_files(os.path.join(zip_path, file_name_images), os.path.join(base_dir, "im
 unzip_files(os.path.join(zip_path, file_name_labels_json), os.path.join(base_dir, "labels_json"))
 
 # ✅ 클래스 필터링 설정
-target_classes = {"01", "02", "03", "04", "07", "08"}
+target_classes = {"01", "03", "07"}    # 안전벨트, 안전고리, 안전모
 
 # ✅ train/val 각각 처리
 for split in ["train", "val"]:
